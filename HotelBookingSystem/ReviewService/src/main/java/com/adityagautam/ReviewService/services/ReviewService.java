@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface ReviewService {
 
-    //getAllReviews
-    List<ReviewDto> getAllReviews();
-
     //create Review
     ReviewDto createReview(ReviewDto reviewDto);
+
+    //getAllReviews
+    List<ReviewDto> getAllReviews();
 
     // get Review by User
     List<ReviewDto> getReviewByUser(String userId);

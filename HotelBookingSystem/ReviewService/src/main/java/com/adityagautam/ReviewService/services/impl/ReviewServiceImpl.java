@@ -23,12 +23,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Override
-    public List<ReviewDto> getAllReviews() {
-        List<Review> reviewList = this.reviewRepository.findAll();
-        List<ReviewDto> reviewDtoList = reviewList.stream().map(review -> this.modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
-        return reviewDtoList;
-    }
 
     @Override
     public ReviewDto createReview(ReviewDto reviewDto) {
@@ -37,6 +31,13 @@ public class ReviewServiceImpl implements ReviewService {
         review.setReviewId(randomId);
         Review createdReview = this.reviewRepository.save(review);
         return this.modelMapper.map(createdReview, ReviewDto.class);
+    }
+
+    @Override
+    public List<ReviewDto> getAllReviews() {
+        List<Review> reviewList = this.reviewRepository.findAll();
+        List<ReviewDto> reviewDtoList = reviewList.stream().map(review -> this.modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
+        return reviewDtoList;
     }
 
     @Override
