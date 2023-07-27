@@ -17,5 +17,5 @@ public class Review {
     private String rating;
     private String reviewDescription;
 
-    private Hotel hotel;
+//    private Hotel hotel;
 }

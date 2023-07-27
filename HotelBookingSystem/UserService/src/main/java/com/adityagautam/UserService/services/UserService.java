@@ -1,5 +1,6 @@
 package com.adityagautam.UserService.services;
 
+import com.adityagautam.UserService.entities.Booking;
 import com.adityagautam.UserService.payloads.UserDto;
 
 import java.util.List;
@@ -23,4 +24,7 @@ public interface UserService {
 
     //delete
     void deleteUser(String userId);
+
+    // getBookingByHotelId
+    List<Booking> getBookingByHotelId(String hotelId);
 }

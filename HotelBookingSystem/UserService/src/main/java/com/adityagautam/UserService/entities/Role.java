@@ -2,7 +2,6 @@ package com.adityagautam.UserService.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +11,6 @@ import lombok.Setter;
 public class Role {
 
     @Id
-     int roleId;
-     String roleName;
+    private int roleId;
+    private String roleName;
 }

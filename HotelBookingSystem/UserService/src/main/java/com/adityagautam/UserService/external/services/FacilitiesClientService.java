@@ -5,11 +5,11 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Set;
+import java.util.List;
 
 @FeignClient(name = "FACILITIES-SERVICE")
 public interface FacilitiesClientService {
 
     @GetMapping("/api/facilities/hotel/{hotelId}")
-    Set<Facilities> getFacilitiesByHotel(@PathVariable String hotelId);
+    List<Facilities> getFacilitiesByHotel(@PathVariable String hotelId);
 }

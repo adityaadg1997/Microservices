@@ -8,7 +8,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, String> {
 
     //custom finder method
-    List<Review> findByUserId(String userId);
+    Review findByUserId(String userId);
 
-    List<Review> findByHotelId(String hotelId);
+    Review findByHotelId(String hotelId);
 }

@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,5 +28,6 @@ public class Hotel {
     private String hotelImages;
 
     private Location location;
-    private Set<Facilities> facilities = new HashSet<>();
+    private List<Facilities> facilities = new ArrayList<>();
+    private Review review;
 }

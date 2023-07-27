@@ -1,0 +1,70 @@
+server:
+  port: 9096
+
+spring:
+  application:
+    name: API-GATEWAY
+#api-gateway config
+  cloud:
+    gateway:
+      routes:
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/user/register/**
+
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/auth/**
+
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - AuthenticationFilter
+
+        - id: HOTEL-SERVICE
+          uri: lb://HOTEL-SERVICE
+          predicates:
+            - Path=/api/hotel/**
+          filters:
+            - AuthenticationFilter
+
+        - id: LOCATION-SERVICE
+          uri: lb://LOCATION-SERVICE
+          predicates:
+            - Path=/api/location/**
+          filters:
+            - AuthenticationFilter
+
+        - id: FACILITIES-SERVICE
+          uri: lb://FACILITIES-SERVICE
+          predicates:
+            - Path=/api/facilities/**
+          filters:
+            - AuthenticationFilter
+
+        - id: REVIEW-SERVICE
+          uri: lb://REVIEW-SERVICE
+          predicates:
+            - Path=/api/review/**
+          filters:
+            - AuthenticationFilter
+
+        - id: BOOKING-SERVICE
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/api/booking/**
+          filters:
+            - AuthenticationFilter
+
+#eureka client config
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+

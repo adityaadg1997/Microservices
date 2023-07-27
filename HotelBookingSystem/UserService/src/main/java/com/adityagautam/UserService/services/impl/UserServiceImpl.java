@@ -3,10 +3,7 @@ package com.adityagautam.UserService.services.impl;
 import com.adityagautam.UserService.constants.AppConstants;
 import com.adityagautam.UserService.entities.*;
 import com.adityagautam.UserService.exception.ResourceNotFoundException;
-import com.adityagautam.UserService.external.services.FacilitiesClientService;
-import com.adityagautam.UserService.external.services.HotelClientService;
-import com.adityagautam.UserService.external.services.LocationClientService;
-import com.adityagautam.UserService.external.services.ReviewClientService;
+import com.adityagautam.UserService.external.services.*;
 import com.adityagautam.UserService.payloads.UserDto;
 import com.adityagautam.UserService.repositories.RoleRepository;
 import com.adityagautam.UserService.repositories.UserRepository;
@@ -18,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +45,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private LocationClientService locationClientService;
 
+    @Autowired
+    private BookingClientService bookingClientService;
+
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
@@ -72,8 +70,10 @@ public class UserServiceImpl implements UserService {
             role = this.roleRepository.findById(AppConstants.ROLE_CUSTOMER_ID).get();
         }
 
-        user.getRoles().add(role);
-        logger.info("user.getRoles().add(role) - {} ", user.getRoles().add(role));
+        Set<Role>  roles =new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
+        logger.info("user.getRoles().add(role) - {} ", user.getRoles());
 
         User newUser = this.userRepository.save(user);
 
@@ -94,33 +94,40 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUser(String userId) {
         User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
-       /**calling REVIEW-SERVICE to fetch user review from userId*/
-        Set<Review> reviewByUser = this.reviewClientService.getReviewByUser(user.getUserId());
-        logger.info("reviewByUser : {}", reviewByUser);
 
+        /**Calling BOOKING-SERVICE to fetch booking from userId*/
+        List<Booking> bookingByUserId = this.bookingClientService.getBookingByUserId(user.getUserId());
 
-        /**Calling HOTEL-SERVICE to fetch hotel from review*/
-        Set<Review> reviewList = reviewByUser.stream().map(review -> {
-            Hotel hotelByIdFromReview = this.hotelClientService.getHotelById(review.getHotelId());
-            review.setHotel(hotelByIdFromReview);
-        /**Calling FACILITIES-SERVICE to fetch facilities from hotel*/
-            Set<Facilities> facilitiesByHotel = this.facilitiesClientService.getFacilitiesByHotel(review.getHotelId());
-            review.getHotel().setFacilities(facilitiesByHotel);
+        /**Calling HOTEL-SERVICE to fetch hotel from bookingId*/
+        List<Booking> bookings = bookingByUserId.stream().map(booking -> {
+            Hotel hotel = this.hotelClientService.getHotelById(booking.getHotelId());
+            booking.setHotel(hotel);
+        /**Calling LOCATION-SERVICE to fetch location from hotel-locationId*/
+            Location location = this.locationClientService.getLocationById(hotel.getLocationId());
+            booking.getHotel().setLocation(location);
+        /**Calling FACILITIES-SERVICE to fetch facility from hotelId*/
+            List<Facilities> facilities = this.facilitiesClientService.getFacilitiesByHotel(hotel.getHotelId());
+            booking.getHotel().setFacilities(facilities);
+        /**Calling REVIEW-SERVICE to fetch reviews from hotelId*/
+            Review review = this.reviewClientService.getReviewByHotelId(hotel.getHotelId());
+            booking.getHotel().setReview(review);
+            return booking;
+        }).collect(Collectors.toList());
 
-        /**Calling LOCATION-SERVICE to fetch location from hotel*/
-            Location locationById = this.locationClientService.getLocationById(review.getHotel().getLocationId());
-            review.getHotel().setLocation(locationById);
-            return review;
-        }).collect(Collectors.toSet());
-
-        user.setReviews(reviewList);
+        user.setBookings(bookings);
         return this.modelMapper.map(user, UserDto.class);
     }
 
     @Override
     public List<UserDto> getAllUser() {
         List<User> userList = this.userRepository.findAll();
-        List<UserDto> userDtoList = userList.stream().map(user -> this.modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+
+        List<User> users = userList.stream().map(user -> {
+            this.getUser(user.getUserId());
+            return user;
+        }).collect(Collectors.toList());
+
+        List<UserDto> userDtoList = users.stream().map(user -> this.modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
         return userDtoList;
     }
 
@@ -146,5 +153,23 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
         User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
         this.userRepository.delete(user);
+    }
+
+    @Override
+    public List<Booking> getBookingByHotelId(String hotelId) {
+        List<Booking> bookingList = this.bookingClientService.getBookingByHotelId(hotelId);
+        List<Booking> bookings = bookingList.stream().map(booking -> {
+            Hotel hotel = this.hotelClientService.getHotelById(booking.getHotelId());
+            booking.setHotel(hotel);
+            Location location = this.locationClientService.getLocationById(hotel.getLocationId());
+            booking.getHotel().setLocation(location);
+            List<Facilities> facilities = this.facilitiesClientService.getFacilitiesByHotel(booking.getHotelId());
+            booking.getHotel().setFacilities(facilities);
+            Review review = this.reviewClientService.getReviewByHotelId(booking.getHotelId());
+            booking.getHotel().setReview(review);
+            return booking;
+        }).collect(Collectors.toList());
+
+        return bookings;
     }
 }

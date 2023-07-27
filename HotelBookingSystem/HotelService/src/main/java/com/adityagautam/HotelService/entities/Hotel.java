@@ -16,7 +16,6 @@ public class Hotel {
     private String hotelId;
     private String locationId;
     private String hotelName;
-//    private String hotelLocation;
     private String hotelDescription;
     private String hotelManager;
     private String email;
@@ -25,11 +24,4 @@ public class Hotel {
     private String address;
     private long pinCode;
     private String hotelImages;
-
-    @Transient
-    private Set<Facilities> facilities = new HashSet<>();
-    @Transient
-    private Set<Review> reviews = new HashSet<>();
-
-
 }

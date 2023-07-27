@@ -1,17 +1,18 @@
 package com.adityagautam.UserService.payloads;
 
-import com.adityagautam.UserService.entities.Review;
+import com.adityagautam.UserService.entities.Booking;
 import com.adityagautam.UserService.entities.Role;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
 
     private String userId;
@@ -25,6 +26,6 @@ public class UserDto {
     private String address;
     private String city;
     private long pinCode;
-    private Set<Review> reviews = new HashSet<>();
+    private List<Booking> bookings = new ArrayList<>();
     private Set<Role> roles;
 }

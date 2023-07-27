@@ -12,10 +12,10 @@ public interface ReviewService {
     //getAllReviews
     List<ReviewDto> getAllReviews();
 
-    // get Review by User
-    List<ReviewDto> getReviewByUser(String userId);
+    // get single Review by User
+    ReviewDto getReviewByUser(String userId);
 
-    // View Hotel Reviews.
-    List<ReviewDto> getReviewByHotel(String hotelId);
+    // get single reviews by Hotel.
+    ReviewDto getReviewByHotel(String hotelId);
 
 }

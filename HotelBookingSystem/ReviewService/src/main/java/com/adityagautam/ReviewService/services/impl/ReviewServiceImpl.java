@@ -41,16 +41,16 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewDto> getReviewByUser(String userId) {
-        List<Review> reviewList = this.reviewRepository.findByUserId(userId);
-        List<ReviewDto> reviewDtoList = reviewList.stream().map(review -> this.modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
-        return reviewDtoList;
+    public ReviewDto getReviewByUser(String userId) {
+        Review review = this.reviewRepository.findByUserId(userId);
+        ReviewDto reviewDto = this.modelMapper.map(review, ReviewDto.class);
+        return reviewDto;
     }
 
     @Override
-    public List<ReviewDto> getReviewByHotel(String hotelId) {
-        List<Review> reviewList = this.reviewRepository.findByHotelId(hotelId);
-        List<ReviewDto> reviewDtoList = reviewList.stream().map(review -> this.modelMapper.map(review, ReviewDto.class)).collect(Collectors.toList());
-        return reviewDtoList;
+    public ReviewDto getReviewByHotel(String hotelId) {
+        Review review = this.reviewRepository.findByHotelId(hotelId);
+        ReviewDto reviewDto = this.modelMapper.map(review, ReviewDto.class);
+        return reviewDto;
     }
 }

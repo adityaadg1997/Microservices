@@ -29,15 +29,14 @@ public class ReviewController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReviewDto>> getReviewByUser(@PathVariable String userId){
-        List<ReviewDto> reviewByUser = this.reviewService.getReviewByUser(userId);
+    public ResponseEntity<ReviewDto> getReviewByUser(@PathVariable String userId){
+        ReviewDto reviewByUser = this.reviewService.getReviewByUser(userId);
         return new ResponseEntity<>(reviewByUser, HttpStatus.OK);
     }
 
-
     @GetMapping("/hotel/{hotelId}")
-    public ResponseEntity<List<ReviewDto>> getReviewByHotel(@PathVariable String hotelId){
-        List<ReviewDto> reviewByHotel = this.reviewService.getReviewByHotel(hotelId);
+    public ResponseEntity<ReviewDto> getReviewByHotel(@PathVariable String hotelId){
+        ReviewDto reviewByHotel = this.reviewService.getReviewByHotel(hotelId);
         return new ResponseEntity<>(reviewByHotel, HttpStatus.OK);
     }
 }
