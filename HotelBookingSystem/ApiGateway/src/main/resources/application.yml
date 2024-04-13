@@ -7,6 +7,22 @@ spring:
 #api-gateway config
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            allowedOriginPatterns: "http://localhost:3000"
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - Accept
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            maxAge: 3600
       routes:
         - id: USER-SERVICE
           uri: lb://USER-SERVICE
