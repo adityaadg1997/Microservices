@@ -36,7 +36,7 @@ public class SecurityConfig {
     private PasswordEncoder passwordEncoder;
 
     public static final String[] PUBLIC_URLs = {
-            "/auth/login",
+            "/api/auth/login",
             "/api/user/register/**"
     };
 
