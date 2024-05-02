@@ -6,6 +6,7 @@ import jakarta.persistence.Transient;
 import lombok.Data;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -23,5 +24,5 @@ public class Hotel {
     private Integer totalRooms;
     private String address;
     private long pinCode;
-    private String hotelImages;
+    private List<String> hotelImages;
 }
