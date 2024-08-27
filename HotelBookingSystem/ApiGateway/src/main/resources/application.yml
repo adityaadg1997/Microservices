@@ -76,6 +76,13 @@ spring:
           filters:
             - AuthenticationFilter
 
+        - id: BOOKING-SERVICE
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/api/payment/**
+          filters:
+            - AuthenticationFilter
+
 #eureka client config
 eureka:
   instance:
