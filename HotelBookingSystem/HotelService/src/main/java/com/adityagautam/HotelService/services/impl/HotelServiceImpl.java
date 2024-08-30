@@ -8,6 +8,7 @@ import com.adityagautam.HotelService.services.HotelService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +45,7 @@ public class HotelServiceImpl implements HotelService {
         return hotelDtos;
     }
 
+    @Transactional
     @Override
     public HotelDto updateHotel(String hotelId, HotelDto hotelDto) {
         Hotel hotel = this.hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel", "hotelId", hotelId));

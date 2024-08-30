@@ -1,13 +1,10 @@
 package com.adityagautam.HotelService.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
 import lombok.Data;
-
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity
@@ -24,5 +21,6 @@ public class Hotel {
     private Integer totalRooms;
     private String address;
     private long pinCode;
+    @Column(length = 1000)
     private List<String> hotelImages;
 }
