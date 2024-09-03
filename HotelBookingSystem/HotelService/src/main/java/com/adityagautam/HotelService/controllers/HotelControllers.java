@@ -6,23 +6,25 @@ import com.adityagautam.HotelService.payloads.HotelDto;
 import com.adityagautam.HotelService.payloads.ImageResponse;
 import com.adityagautam.HotelService.services.FileService;
 import com.adityagautam.HotelService.services.HotelService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -112,31 +114,40 @@ public class HotelControllers {
         }
     }
 
-    //Download Hotel image
+    /**
+     * Download Hotel image
+     * client will call getHotelImageUrls
+     * in getHotelImageUrls, we are imageUrls list and return it,
+     * so that, client can call each url and will be able to download each image.
+     */
+
+    //Create an endpoint to serve images using the getResource method:
+    @GetMapping("/{hotelId}/image/{imageName}")
+    public ResponseEntity<InputStreamResource> serveImage(@PathVariable String hotelId, @PathVariable String imageName) {
+        try {
+            InputStream imageStream = fileService.getResource(imagePath, imageName, hotelId);
+            InputStreamResource resource = new InputStreamResource(imageStream);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+        } catch (FileNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    //Generate the URLs for the images and return them in your main endpoint:
     @GetMapping("/{hotelId}/media/download")
-    public void downloadHotelImages(@PathVariable String hotelId, HttpServletResponse response) throws IOException {
-        List<String> hotelImages = Optional.ofNullable(hotelService.getHotel(hotelId).getHotelImages()).orElseThrow(() -> new HotelBaseException("Hotel with hotelId : "+hotelId+" not found."));  // Get file names from the database
+    public ResponseEntity<List<String>> getHotelImageUrls(@PathVariable String hotelId) {
+        try {
+            List<String> hotelImages = Optional.ofNullable(hotelService.getHotel(hotelId).getHotelImages()).orElseThrow(() -> new HotelBaseException("Hotel with hotelId: " + hotelId + " not found."));
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader("Content-Disposition", "attachment; filename=hotel-images.zip");
-        response.setContentType("application/zip");
+            String baseUrl = "/hotel/" + hotelId + "/image/";
 
-        try (ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream())) {
-            for (String imageName : hotelImages) {
-                try (InputStream fis = fileService.getResource(imagePath, imageName, hotelId)) {
-                    ZipEntry zipEntry = new ZipEntry(imageName);
-                    zipOut.putNextEntry(zipEntry);
+            List<String> imageUrls = hotelImages.stream().map(imageName -> baseUrl + imageName).collect(Collectors.toList());
 
-                    byte[] bytes = new byte[1024];
-                    int length;
-                    while ((length = fis.read(bytes)) >= 0) {
-                        zipOut.write(bytes, 0, length);
-                    }
-                }
-            }
-            zipOut.finish();
-        }catch (IOException ioException){
-            throw new IOException("Unable to download bulk hotel images");
+            return new ResponseEntity<>(imageUrls, HttpStatus.OK);
+        } catch (HotelBaseException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
