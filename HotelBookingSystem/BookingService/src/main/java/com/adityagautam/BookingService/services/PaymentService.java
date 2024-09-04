@@ -7,4 +7,6 @@ public interface PaymentService {
 
     String createOrder(Map<String, Object> paymentRequest) throws RazorpayException;
 
+    void updateOrder(Map<String, Object> paymentRequest) throws RazorpayException;
+
 }
